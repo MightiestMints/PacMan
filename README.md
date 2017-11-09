@@ -5,7 +5,7 @@ Date Begun: 11/7/2017
 ## Collaborators
 Corey Craddock (cradcore)
 
-Braden Hogan (SteelHart13)
+Braden Hogan (SteelHeart13)
 
 Justin Rentie  (jurentie)
 
