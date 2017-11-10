@@ -28,9 +28,9 @@ def startGame(state):
             turn = 0
         p.printState(state)
         print("\nActions available:", p.actions(state))
-        state = p.takeAction(state, input("Action: "))
         for ghost in ghosts:
             state = ghost.randomMove(state)
+        state = p.takeAction(state, input("Action: "))
         print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
         turn += 1
     if p.lives == 0:
