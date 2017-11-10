@@ -30,7 +30,6 @@ def startGame(state):
         print("\nActions available:", p.actions(state))
         state = p.takeAction(state, input("Action: "))
         for ghost in ghosts:
-            print('here')
             state = ghost.randomMove(state)
         print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
         turn += 1
