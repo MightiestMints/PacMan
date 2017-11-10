@@ -4,8 +4,9 @@ from random import randint
 class Ghost(object):
 
     # Constructor
-    def __init__(self, state):
-        self.location = self.caclulateLocation(state)
+    def __init__(self, state, respawn):
+        self.location = respawn
+        self.respawn = respawn
 
     # Calculates and returns the 2D indices of the ghost spawn location
     def caclulateLocation(self, state):
@@ -59,10 +60,10 @@ class Ghost(object):
             newLoc = (self.location[0], self.location[1] + 1)
 
         # Update state and location
-        if newState[newLoc[0]][newLoc[1]] != 'G':
-            newState[newLoc[0]][newLoc[1]] = 'g'
-        if newState[self.location[0]][self.location[1]] != 'G':
-            newState[self.location[0]][self.location[1]] = ' '
+        #if newState[newLoc[0]][newLoc[1]] != 'G':
+        newState[newLoc[0]][newLoc[1]] = 'g'
+        #if newState[self.location[0]][self.location[1]] != 'G':
+        newState[self.location[0]][self.location[1]] = ' '
         self.location = newLoc
         return newState
 
