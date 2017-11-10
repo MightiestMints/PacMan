@@ -13,18 +13,36 @@ def getDots(state):
                 dots.append(d.Dot(x, y, True))
     return dots
 
+def ghostSpawnPt(state):
+    for i in range(len(state)):
+        for j in range(len(state[i])):
+            if state[i][j] == 'G':
+                return i, j
+    # If it didn't find the location
+    print("Could not find ghost spawn point in calculateLocation")
+    return None
+
+def pacManSpawnPoint(state):
+    spawnLoc = None
+    for i in range(len(state)):
+        for j in range(len(state[i])):
+            if state[i][j] == 'P':
+                spawnLoc = i, j
+    return spawnLoc
+
 # Creates Pac Man and starts the game. State is passed in as a parameter
 # Right now the state is advancing a turn only after a move is selected. This will change when Pac Man gets his smarts
 # Currently spawns a Ghost after the first turn
 def startGame(state):
-    p = P.PacMan(state)
+    p = P.PacMan(state, pacManSpawnPoint(state))
+    ghostSpawn = ghostSpawnPt(state)
     ghosts = []
     dots = getDots(state)
     turn = 1
     while not p.gameOver():
         print("Lives:", p.getLives(), "\tDots left:", p.dotsLeft, "\tLocation:", p.location, "\tTurn:", turn)
         if turn is 5:
-            ghosts.append(G.Ghost(state))
+            ghosts.append(G.Ghost(state, ghostSpawn))
             turn = 0
         p.printState(state)
         print("\nActions available:", p.actions(state))
