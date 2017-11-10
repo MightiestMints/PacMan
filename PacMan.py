@@ -5,10 +5,15 @@ import copy as copy
 class PacMan(object):
 
     # Constructor
-    def __init__(self, state):
+    def __init__(self, state, respawn):
         self.lives = 3                                      # Lives left
         self.dotsLeft = self.calculateDotsLeft(state)       # Dots left
-        self.location = self.calculateLocation(state)       # 2D indices of Pac Man's location
+        self.location = respawn                             # 2D indices of Pac Man's location
+        self.respawn = respawn
+
+    #retun spawn point for PacMan
+    def spawnPt(self):
+        return self.respawn
 
     # Returns all possible actions (up, down, left, right)
     def actions(self, state):
@@ -56,10 +61,10 @@ class PacMan(object):
             print("You died")                # TODO (Respawn after Pac Man hits a ghost)
 
         # Update state and location
-        if newState[newLoc[0]][newLoc[1]] != 'P':
-            newState[newLoc[0]][newLoc[1]] = 'p'
-        if newState[self.location[0]][self.location[1]] != 'P':
-            newState[self.location[0]][self.location[1]] = ' '
+        #if newState[newLoc[0]][newLoc[1]] != 'P':
+        newState[newLoc[0]][newLoc[1]] = 'p'
+        #if newState[self.location[0]][self.location[1]] != 'P':
+        newState[self.location[0]][self.location[1]] = ' '
         self.location = newLoc
         return newState
 
@@ -80,7 +85,8 @@ class PacMan(object):
                     currentLoc = i, j
         if currentLoc != None:
             return currentLoc
-        else: return spawnLoc
+        else:
+            return spawnLoc
 
     # Calculates and returns the number of dots in a given state.
     # Should only be called by constructor (dotsLeft updated in takeAction)
