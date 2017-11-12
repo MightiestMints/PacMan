@@ -17,18 +17,22 @@ def getDots(state):
 # Right now the state is advancing a turn only after a move is selected. This will change when Pac Man gets his smarts
 # Currently spawns a Ghost after the first turn
 def startGame(state):
+    # Current Score of the game stored as an Integer
+    score = 0
     p = P.PacMan(state)
     ghosts = []
     dots = getDots(state)
     turn = 1
     while not p.gameOver():
-        print("Lives:", p.getLives(), "\tDots left:", p.dotsLeft, "\tLocation:", p.location, "\tTurn:", turn)
+        print("Lives:", p.getLives(), "\tDots left:", p.dotsLeft, "\tLocation:", p.location, "\tTurn:", turn, "\tScore:", score)
         if turn is 5:
             ghosts.append(G.Ghost(state))
             turn = 0
         p.printState(state)
         print("\nActions available:", p.actions(state))
         state = p.takeAction(state, input("Action: "))
+        if score > 5 : score -= 5
+        else : score =0
         for ghost in ghosts:
             state = ghost.randomMove(state)
         print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
