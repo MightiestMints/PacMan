@@ -25,16 +25,25 @@ def startGame(state):
     turn = 1
     while not p.gameOver():
         print("Lives:", p.getLives(), "\tDots left:", p.dotsLeft, "\tLocation:", p.location, "\tTurn:", turn, "\tScore:", score)
+        # Number of dots remaining and lives at the beginning of the turn. This is used in score calculation.
+        beginNumDots = p.dotsLeft
+        beginNumLives = p.getLives()
         if turn is 5:
             ghosts.append(G.Ghost(state))
             turn = 0
         p.printState(state)
         print("\nActions available:", p.actions(state))
         state = p.takeAction(state, input("Action: "))
-        if score > 5 : score -= 5
-        else : score =0
         for ghost in ghosts:
             state = ghost.randomMove(state)
+        # Start of Score Calculation
+        if score >= 1 : score -= 1
+        if beginNumDots > p.dotsLeft : score += 10
+        if beginNumLives > p.getLives() :
+            if score > 100:
+                score -= 100
+            else: score = 0
+        # End of Score Calculation
         print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
         turn += 1
     if p.lives == 0:
