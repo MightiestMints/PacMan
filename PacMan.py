@@ -11,7 +11,7 @@ class PacMan(object):
         self.location = respawn                             # 2D indices of Pac Man's location
         self.respawn = respawn
 
-    #retun spawn point for PacMan
+    #return spawn point for PacMan
     def spawnPt(self):
         return self.respawn
 

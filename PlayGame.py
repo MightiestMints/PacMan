@@ -33,7 +33,7 @@ def pacManSpawnPoint(state):
 # Creates Pac Man and starts the game. State is passed in as a parameter
 # Right now the state is advancing a turn only after a move is selected. This will change when Pac Man gets his smarts
 # Currently spawns a Ghost after the first turn
-def startGame(state):
+def startGame(state, numberOfGhosts):
     # Current Score of the game stored as an Integer
     score = 0
     p = P.PacMan(state, pacManSpawnPoint(state))
@@ -46,7 +46,7 @@ def startGame(state):
         # Number of dots remaining and lives at the beginning of the turn. This is used in score calculation.
         beginNumDots = p.dotsLeft
         beginNumLives = p.getLives()
-        if turn is 5:
+        if turn is 3 and (len(ghosts) < numberOfGhosts):
             ghosts.append(G.Ghost(state, ghostSpawn))
             turn = 0
         p.printState(state)
@@ -79,4 +79,4 @@ if __name__ == "__main__":
              ['|', '.', '.', '.', '.', '.', '.', '.', '.', 'P', '|'],
              ['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=']]
 
-    startGame(state)
+    startGame(state, 1)
