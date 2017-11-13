@@ -23,16 +23,16 @@ class PacMan(object):
         stateX = self.getStateSize(state)[0]
         stateY = self.getStateSize(state)[1]
         # Check up
-        if (pacX - 1 != 0) & (state[pacX - 1][pacY] != '='):
+        if (pacX - 1 != 0) & (state[pacX - 1][pacY] != '=') & (state[pacX - 1][pacY] != '|'):
             actions.append("up")
         # Check down
-        if (pacX + 1 != stateX - 1) & (state[pacX + 1][pacY] != '='):
+        if (pacX + 1 != stateX - 1) & (state[pacX + 1][pacY] != '=') & (state[pacX + 1][pacY] != '|'):
             actions.append("down")
         # Check left
-        if (pacY - 1 != 0) & (state[pacX][pacY - 1] != '|'):
+        if (pacY - 1 != 0) & (state[pacX][pacY - 1] != '|') & (state[pacX][pacY - 1] != '='):
             actions.append("left")
         # Check right
-        if (pacY + 1 != stateY - 1) & (state[pacX][pacY + 1] != '|'):
+        if (pacY + 1 != stateY - 1) & (state[pacX][pacY + 1] != '|') & (state[pacX][pacY + 1] != '='):
             actions.append("right")
 
         return actions

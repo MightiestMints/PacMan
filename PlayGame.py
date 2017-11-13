@@ -52,7 +52,9 @@ def startGame(state, numberOfGhosts):
         p.printState(state)
         print("\nActions available:", p.actions(state))
         for ghost in ghosts:
-            state = ghost.randomMove(state)
+            #state = ghost.intelligentMove(state, p.location)
+            state = ghost.takeActionShortestDistance(state, p.location)
+            #state = ghost.randomMove(state)
         state = p.takeAction(state, input("Action: "))
         # Start of Score Calculation
         if score >= 1 : score -= 1
