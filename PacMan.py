@@ -5,10 +5,15 @@ import copy as copy
 class PacMan(object):
 
     # Constructor
-    def __init__(self, state):
+    def __init__(self, state, respawn):
         self.lives = 3                                      # Lives left
         self.dotsLeft = self.calculateDotsLeft(state)       # Dots left
-        self.location = self.calculateLocation(state)       # 2D indices of Pac Man's location
+        self.location = respawn                             # 2D indices of Pac Man's location
+        self.respawn = respawn                              # 2D indices of Pac Man's spawn point
+
+    # Return spawn point for PacMan
+    def spawnPt(self):
+        return self.respawn
 
     # Returns all possible actions (up, down, left, right)
     def actions(self, state):
@@ -18,16 +23,16 @@ class PacMan(object):
         stateX = self.getStateSize(state)[0]
         stateY = self.getStateSize(state)[1]
         # Check up
-        if (pacX - 1 != 0) & (state[pacX - 1][pacY] != '='):
+        if (pacX - 1 != 0) & (state[pacX - 1][pacY] != '=') & (state[pacX - 1][pacY] != '|'):
             actions.append("up")
         # Check down
-        if (pacX + 1 != stateX - 1) & (state[pacX + 1][pacY] != '='):
+        if (pacX + 1 != stateX - 1) & (state[pacX + 1][pacY] != '=') & (state[pacX + 1][pacY] != '|'):
             actions.append("down")
         # Check left
-        if (pacY - 1 != 0) & (state[pacX][pacY - 1] != '|'):
+        if (pacY - 1 != 0) & (state[pacX][pacY - 1] != '|') & (state[pacX][pacY - 1] != '='):
             actions.append("left")
         # Check right
-        if (pacY + 1 != stateY - 1) & (state[pacX][pacY + 1] != '|'):
+        if (pacY + 1 != stateY - 1) & (state[pacX][pacY + 1] != '|') & (state[pacX][pacY + 1] != '='):
             actions.append("right")
 
         return actions
@@ -47,19 +52,16 @@ class PacMan(object):
         elif action == 'right':
             newLoc = (self.location[0], self.location[1] + 1)
 
-        # Update class variables
+        # Eat dot
         s = newState[newLoc[0]][newLoc[1]]
         if s == '.':
             self.dotsLeft -= 1
-        if s == 'g':
-            self.lives -= 1
-            print("You died")                # TODO (Respawn after Pac Man hits a ghost)
 
         # Update state and location
-        if newState[newLoc[0]][newLoc[1]] != 'P':
-            newState[newLoc[0]][newLoc[1]] = 'p'
-        if newState[self.location[0]][self.location[1]] != 'P':
-            newState[self.location[0]][self.location[1]] = ' '
+        #if newState[newLoc[0]][newLoc[1]] != 'P':
+        newState[newLoc[0]][newLoc[1]] = 'p'
+        #if newState[self.location[0]][self.location[1]] != 'P':
+        newState[self.location[0]][self.location[1]] = ' '
         self.location = newLoc
         return newState
 
@@ -80,7 +82,8 @@ class PacMan(object):
                     currentLoc = i, j
         if currentLoc != None:
             return currentLoc
-        else: return spawnLoc
+        else:
+            return spawnLoc
 
     # Calculates and returns the number of dots in a given state.
     # Should only be called by constructor (dotsLeft updated in takeAction)
