@@ -100,10 +100,10 @@ class Ghost(object):
 
         #Positive means we want to move Right
         xDiff = locOfPacman[1] - self.location[1]
-        print(xDiff)
+        #print(xDiff)
         #Positive means we want to move Down
         yDiff = locOfPacman[0] - self.location[0]
-        print(yDiff)
+        #print(yDiff)
         for action in Ghost.actions(self,state):
             if (action == 'up') & (yDiff < 0):
                 return Ghost.takeAction(self, state, action)
