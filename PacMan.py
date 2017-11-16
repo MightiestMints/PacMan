@@ -9,9 +9,9 @@ class PacMan(object):
         self.lives = 3                                      # Lives left
         self.dotsLeft = self.calculateDotsLeft(state)       # Dots left
         self.location = respawn                             # 2D indices of Pac Man's location
-        self.respawn = respawn
+        self.respawn = respawn                              # 2D indices of Pac Man's spawn point
 
-    #return spawn point for PacMan
+    # Return spawn point for PacMan
     def spawnPt(self):
         return self.respawn
 
@@ -52,13 +52,10 @@ class PacMan(object):
         elif action == 'right':
             newLoc = (self.location[0], self.location[1] + 1)
 
-        # Update class variables
+        # Eat dot
         s = newState[newLoc[0]][newLoc[1]]
         if s == '.':
             self.dotsLeft -= 1
-        if s == 'g':
-            self.lives -= 1
-            print("You died")                # TODO (Respawn after Pac Man hits a ghost)
 
         # Update state and location
         #if newState[newLoc[0]][newLoc[1]] != 'P':
