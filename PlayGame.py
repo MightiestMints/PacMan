@@ -33,18 +33,18 @@ def pacManSpawnPoint(state):
 
 
 
-# Creates Pac Man and starts the game. State is passed in as a parameter
+# Creates Pac Man and starts the game. State and Ghost objects are passed in as parameters
 # Right now the state is advancing a turn only after a move is selected. This will change when Pac Man gets his smarts
-# Currently spawns a Ghost after the first turn
-def startGame(state, numberOfGhosts):
+# Currently spawns a ghost every 3 turns
+def startGame(state, ghostsAvailable):
     # Current Score of the game stored as an Integer
     score = 0
     p = P.PacMan(state, pacManSpawnPoint(state))
     ghostSpawn = ghostSpawnPt(state)
-    ghosts = []
     dots = getDots(state)
     turn = 1
     dead = False
+    ghosts = []
     while not p.gameOver():
         if(dead):
             print("You died!")
@@ -53,9 +53,8 @@ def startGame(state, numberOfGhosts):
         # Number of dots remaining and lives at the beginning of the turn. This is used in score calculation.
         beginNumDots = p.dotsLeft
         beginNumLives = p.getLives()
-        if turn % 3 == 0 and (len(ghosts) < numberOfGhosts):
-            ghosts.append(G.Ghost(state, ghostSpawn))
-            turn = 0
+        if turn % 3 == 0 and len(ghosts) < len(ghostsAvailable):
+            ghosts.append(ghostsAvailable[len(ghosts)])
         p.printState(state)
         print("\nActions available:", p.actions(state))
         for ghost in ghosts:
@@ -100,6 +99,6 @@ if __name__ == "__main__":
              ['|', ' ', '=', '=', '=', ' ', '=', '=', '=', ' ', '|'],
              ['|', '.', '.', '.', '.', '.', '.', '.', '.', 'P', '|'],
              ['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=']]
-    # Start game with above state and 1 ghost
-    numGhosts = 2
-    startGame(state, numGhosts)
+    # Start game with above state and 2 ghosts
+    ghostSpawn = ghostSpawnPt(state)
+    startGame(state, [G.Ghost(state, ghostSpawn), G.Ghost(state, ghostSpawn)])
