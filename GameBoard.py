@@ -19,7 +19,8 @@ class GameBoard(object):
     #Constructor (Work in progress)
     def __init__(self, startState):
         self.board = startState
-
+        self.dot = self.getDots(startState)
+        self.ghostSpawnPt = self.findGhostSpawnPt(startState)
         return
 
     def __getitem__(self, item):
@@ -27,6 +28,14 @@ class GameBoard(object):
         y = item[1]
         return self.board[x][y]
 
+    def findGhostSpawnPt(self, state):
+        for i in range(len(state)):
+            for j in range(len(state[i])):
+                if state[i][j] == 'G':
+                    return i, j
+        # If it didn't find the location
+        print("Could not find ghost spawn point in calculateLocation")
+        return None
 
     def getDots(self, state):
         dots = []

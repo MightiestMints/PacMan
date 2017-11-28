@@ -1,6 +1,7 @@
 import PacMan as P
 import Ghost as G
 import Dot as d
+import GameBoard as Board
 import copy as copy
 
 # Scans through state and returns a list of Dot objects.
@@ -38,10 +39,10 @@ def pacManSpawnPoint(state):
 # Currently spawns a ghost every 3 turns
 def startGame(state, ghostsAvailable):
     # Current Score of the game stored as an Integer
+    board = Board.GameBoard(state)
     score = 0
     p = P.PacMan(state, pacManSpawnPoint(state))
-    ghostSpawn = ghostSpawnPt(state)
-    dots = getDots(state)
+    ghostSpawn = board.ghostSpawnPt
     turn = 1
     dead = False
     ghosts = []
