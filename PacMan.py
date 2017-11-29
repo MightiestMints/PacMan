@@ -22,7 +22,10 @@ class PacMan(object):
         pacY = self.location[1]
         stateX = self.getStateSize(state)[0]
         stateY = self.getStateSize(state)[1]
+        print(stateX)
+        print(stateY)
         # Check up
+<<<<<<< Updated upstream
         if (pacX - 1 != 0) & (state[pacX - 1][pacY] != '='):
             actions.append("up")
         # Check down
@@ -33,6 +36,18 @@ class PacMan(object):
             actions.append("left")
         # Check right
         if (pacY + 1 != stateY - 1) & (state[pacX][pacY + 1] != '|'):
+=======
+        if (state[pacX - 1][pacY] != '=') & (state[pacX - 1][pacY] != '|'):
+            actions.append("up")
+        # Check down
+        if (state[pacX + 1][pacY] != '=') & (state[pacX + 1][pacY] != '|'):
+            actions.append("down")
+        # Check left
+        if (state[pacX][pacY - 1] != '|') & (state[pacX][pacY - 1] != '='):
+            actions.append("left")
+        # Check right
+        if (state[pacX][pacY + 1] != '|') & (state[pacX][pacY + 1] != '='):
+>>>>>>> Stashed changes
             actions.append("right")
 
         return actions
@@ -44,13 +59,29 @@ class PacMan(object):
 
         # Get location of new position after action is taken
         if action == 'up':
-            newLoc = (self.location[0] - 1, self.location[1])
+            #check for teloportation
+            if state[self.location[0] - 1][self.location[1]] == 't':
+                newLoc = (len(state) - 2, self.location[1])
+            else:
+                newLoc = (self.location[0] - 1, self.location[1])
         elif action == 'down':
-            newLoc = (self.location[0] + 1, self.location[1])
+            #check for teleportation
+            if state[self.location[0] + 1][self.location[1]] == 't':
+                newLoc = (1, self.location[1])
+            else:
+                newLoc = (self.location[0] + 1, self.location[1])
         elif action == 'left':
-            newLoc = (self.location[0], self.location[1] - 1)
+            #check for telelporation
+            if state[self.location[0]][self.location[1] - 1] == 't':
+                newLoc = (self.location[0], len(state[0]) - 2)
+            else:
+                newLoc = (self.location[0], self.location[1] - 1)
         elif action == 'right':
-            newLoc = (self.location[0], self.location[1] + 1)
+            #check for teleporation
+            if state[self.location[0]][self.location[1] + 1] == 't':
+                newLoc = (self.location[0],1)
+            else:
+                newLoc = (self.location[0], self.location[1] + 1)
 
         # Update class variables
         s = newState[newLoc[0]][newLoc[1]]
