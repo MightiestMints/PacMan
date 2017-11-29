@@ -22,7 +22,7 @@ class PacMan(object):
         pacY = self.location[1]
         stateX = self.getStateSize(state)[0]
         stateY = self.getStateSize(state)[1]
-        
+
         # Check up
         if (state[pacX - 1][pacY] != '=') & (state[pacX - 1][pacY] != '|'):
             actions.append("up")

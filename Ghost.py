@@ -29,17 +29,18 @@ class Ghost(object):
         ghostY = self.location[1]
         stateX = self.getStateSize(state)[0]
         stateY = self.getStateSize(state)[1]
+
         # Check up
-        if (ghostX - 1 != 0) & (state[ghostX - 1][ghostY] != '=') & (state[ghostX - 1][ghostY] != '|' ):
+        if (state[ghostX - 1][ghostY] != '=') & (state[ghostX - 1][ghostY] != '|'):
             actions.append("up")
         # Check down
-        if (ghostX + 1 != stateX - 1) & (state[ghostX + 1][ghostY] != '=') & (state[ghostX + 1][ghostY] != '|' ):
+        if (state[ghostX + 1][ghostY] != '=') & (state[ghostX + 1][ghostY] != '|'):
             actions.append("down")
         # Check left
-        if (ghostY - 1 != 0) & (state[ghostX][ghostY - 1] != '|') & (state[ghostX][ghostY - 1] != '=' ):
+        if (state[ghostX][ghostY - 1] != '|') & (state[ghostX][ghostY - 1] != '='):
             actions.append("left")
         # Check right
-        if (ghostY + 1 != stateY - 1) & (state[ghostX][ghostY + 1] != '|') & (state[ghostX][ghostY + 1] != '=' ):
+        if (state[ghostX][ghostY + 1] != '|') & (state[ghostX][ghostY + 1] != '='):
             actions.append("right")
 
         return actions
@@ -51,13 +52,29 @@ class Ghost(object):
 
         # Get location of new position after action is taken
         if action == 'up':
-            newLoc = (self.location[0] - 1, self.location[1])
+            # check for teloportation
+            if state[self.location[0] - 1][self.location[1]] == 't':
+                newLoc = (len(state) - 2, self.location[1])
+            else:
+                newLoc = (self.location[0] - 1, self.location[1])
         elif action == 'down':
-            newLoc = (self.location[0] + 1, self.location[1])
+            # check for teleportation
+            if state[self.location[0] + 1][self.location[1]] == 't':
+                newLoc = (1, self.location[1])
+            else:
+                newLoc = (self.location[0] + 1, self.location[1])
         elif action == 'left':
-            newLoc = (self.location[0], self.location[1] - 1)
+            # check for telelporation
+            if state[self.location[0]][self.location[1] - 1] == 't':
+                newLoc = (self.location[0], len(state[0]) - 2)
+            else:
+                newLoc = (self.location[0], self.location[1] - 1)
         elif action == 'right':
-            newLoc = (self.location[0], self.location[1] + 1)
+            # check for teleporation
+            if state[self.location[0]][self.location[1] + 1] == 't':
+                newLoc = (self.location[0], 1)
+            else:
+                newLoc = (self.location[0], self.location[1] + 1)
 
         # Update state and location
         #if newState[newLoc[0]][newLoc[1]] != 'G':
