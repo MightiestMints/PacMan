@@ -1,6 +1,7 @@
 import PacMan as P
 import Ghost as G
 import Dot as d
+import GameBoard as Board
 import copy as copy
 
 # Scans through state and returns a list of Dot objects.
@@ -14,22 +15,6 @@ def getDots(state):
                 dots.append(d.Dot(x, y, True))
     return dots
 
-def ghostSpawnPt(state):
-    for i in range(len(state)):
-        for j in range(len(state[i])):
-            if state[i][j] == 'G':
-                return i, j
-    # If it didn't find the location
-    print("Could not find ghost spawn point in calculateLocation")
-    return None
-
-def pacManSpawnPoint(state):
-    spawnLoc = None
-    for i in range(len(state)):
-        for j in range(len(state[i])):
-            if state[i][j] == 'P':
-                spawnLoc = i, j
-    return spawnLoc
 
 
 
@@ -38,10 +23,10 @@ def pacManSpawnPoint(state):
 # Currently spawns a ghost every 3 turns
 def startGame(state, ghostsAvailable):
     # Current Score of the game stored as an Integer
+    board = Board.GameBoard(state)
     score = 0
-    p = P.PacMan(state, pacManSpawnPoint(state))
-    ghostSpawn = ghostSpawnPt(state)
-    dots = getDots(state)
+    p = P.PacMan(state, board.pacManSpawnPt)
+    ghostSpawn = board.ghostSpawnPt
     turn = 1
     dead = False
     ghosts = []
@@ -100,5 +85,5 @@ if __name__ == "__main__":
              ['|', '.', '.', '.', '.', '.', '.', '.', '.', 'P', '|'],
              ['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=']]
     # Start game with above state and 2 ghosts
-    ghostSpawn = ghostSpawnPt(state)
-    startGame(state, [G.Ghost(state, ghostSpawn), G.Ghost(state, ghostSpawn)])
+    board = Board.GameBoard(state)
+    startGame(state, [G.Ghost(state, board.ghostSpawnPt), G.Ghost(state, board.ghostSpawnPt)])
