@@ -21,7 +21,7 @@ def getDots(state):
 # Creates Pac Man and starts the game. State and Ghost objects are passed in as parameters
 # Right now the state is advancing a turn only after a move is selected. This will change when Pac Man gets his smarts
 # Currently spawns a ghost every 3 turns
-def startGame(state, ghostsAvailable):
+def startGame(state, ghostsAvailable, intelligenceLevel=3):
     # Current Score of the game stored as an Integer
     board = Board.GameBoard(state)
     score = 0
@@ -43,9 +43,15 @@ def startGame(state, ghostsAvailable):
         p.printState(state)
         print("\nActions available:", p.actions(state))
         for ghost in ghosts:
-            #state = ghost.intelligentMove(state, p.location)
-            state = ghost.takeActionShortestDistance(state, p.location)
-            #state = ghost.randomMove(state)
+            print("Taking a ghost action")
+            if intelligenceLevel is 0:
+                state = ghost.randomMove(state)
+            elif intelligenceLevel is 1:
+                state = ghost.takeActionShortestDistance(state, p.location)
+            elif intelligenceLevel is 2:
+                state = ghost.intelligentMove(state, p.location)
+            else:
+                state = ghost.intelligentMove(state, p.location, maxDepth=8)
         state = p.takeAction(state, input("Action: "))
         # Respawn if Pac Man is killed
         for ghost in ghosts:
@@ -72,7 +78,7 @@ def startGame(state, ghostsAvailable):
     # Game over
     if p.lives == 0:
         print("Game over: You died!")
-    else: print("Game over: You ate all the dots with", p.getLives(), "lives left!")
+    else: print("Game over: You ate all the dots with", p.getLives(), "lives left! Your score was ", score)
 
 if __name__ == "__main__":
 
@@ -86,4 +92,4 @@ if __name__ == "__main__":
              ['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=']]
     # Start game with above state and 2 ghosts
     board = Board.GameBoard(state)
-    startGame(state, [G.Ghost(state, board.ghostSpawnPt), G.Ghost(state, board.ghostSpawnPt)])
+    startGame(state, [G.Ghost(state, board.ghostSpawnPt)], 1)
