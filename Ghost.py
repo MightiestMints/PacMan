@@ -65,7 +65,7 @@ class Ghost(object):
         return self.takeAction(board, move)
 
     # Helps Intelligent Move in finding the best direction to take to get to Pacman
-    def depthLimitedSearch(self, state, locOfPacman, actions, takeAction, depthLimit):
+    def depthLimitedSearch(self, board, locOfPacman, actions, takeAction, depthLimit):
         if self.location == locOfPacman:
             return []
 
@@ -73,8 +73,9 @@ class Ghost(object):
             return "cutoff"
 
         cutOffOccurred = False
-        for action in actions(self, state):
-            newState = takeAction(self, state, action)
+        for action in actions(self, board):
+            newState = copy.deepcopy(board)
+            takeAction(self, newState, action)
             result = Ghost.depthLimitedSearch(self, newState, locOfPacman, actions, takeAction, depthLimit-1)
             if result is "cutoff":
                 cutOffOccurred = True
@@ -107,18 +108,17 @@ class Ghost(object):
         return Ghost.randomMove(self, board)
 
     # Causes the ghost to scan through the board, making the most intelligent shortest path decision
-    def intelligentMove(self, state, locOfPacman, maxDepth=15):
+    def intelligentMove(self, board, locOfPacman, maxDepth=15):
         if self.location == locOfPacman:
-            return state
+            return
         for depth in range(maxDepth):
-            result = Ghost.depthLimitedSearch(self, state, locOfPacman, Ghost.actions, Ghost.takeAction, depth)
+            result = Ghost.depthLimitedSearch(self, board, locOfPacman, Ghost.actions, Ghost.takeAction, depth)
             if result is "failure":
                 return "failure;"
             if result is not "cutoff":
                 # Return the state that is the first state added. This is the best next move.
                 print("Ghost found an intelligent move!")
-                return result[0]
-
+                board = result[0]
         # If we get here, this means we were cutoff. Essentially, we couldn't find Pacman within maxDepth moves
         # At this point, we just want to make a move in the direction that Pacman is in
-        return Ghost.takeActionShortestDistance(self, state, locOfPacman)
+        return Ghost.takeActionShortestDistance(self, board, locOfPacman)
