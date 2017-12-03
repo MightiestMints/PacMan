@@ -1,3 +1,6 @@
+import PacMan as P
+import Ghost as G
+import copy
 
 class Dot(object):
 
@@ -18,7 +21,7 @@ class GameBoard(object):
 
     #Constructor (Work in progress)
     def __init__(self, startState):
-        self.board = startState
+        self.board = copy.deepcopy(startState)
         self.dots = self.getDots(startState)
         self.ghostSpawnPt = self.findGhostSpawnPt(startState)
         self.pacManSpawnPt = self.findPacManSpawnPt(startState)
@@ -76,3 +79,20 @@ class GameBoard(object):
                 if state[i][j]  == '.':
                     dots += 1
         return dots
+
+    def move(self, target, x, y):
+        tarX = target.location[0]
+        tarY = target.location[1]
+        if isinstance(target, P.PacMan):
+            if self.board[x][y] is '.':
+             self.dotsLeft = self.dotsLeft - 1
+             self.board[x][y] = 'p'
+             self.board[tarX][tarY] = ' '
+             target.location = x,y
+            else:
+             self.board[x][y] = 'p'
+             self.board[tarX][tarY] = ' '
+             target.location = x,y
+        else:
+            print("should not be in here"
+                  "")

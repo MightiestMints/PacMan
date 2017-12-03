@@ -30,7 +30,7 @@ def startGame(state, ghostsAvailable):
     turn = 1
     dead = False
     ghosts = []
-    while not p.gameOver():
+    while not p.gameOver(board):
         if(dead):
             print("You died!")
             dead = False
@@ -61,7 +61,7 @@ def startGame(state, ghostsAvailable):
                 dead = True
         # Start of Score Calculation
         if score >= 1 : score -= 1
-        if beginNumDots > p.dotsLeft : score += 10
+        if beginNumDots > board.dotsLeft : score += 10
         if beginNumLives > p.getLives() :
             if score > 100:
                 score -= 100
