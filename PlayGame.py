@@ -44,20 +44,15 @@ def startGame(state, ghostsAvailable):
         print("\nActions available:", p.actions(board))
         for ghost in ghosts:
             #state = ghost.intelligentMove(state, p.location)
-            state = ghost.takeActionShortestDistance(state, p.location)
+            state = ghost.takeActionShortestDistance(board, p.location)
             #state = ghost.randomMove(state)
         state = p.takeAction(board, input("Action: "))
         # Respawn if Pac Man is killed
         for ghost in ghosts:
             if p.location == ghost.location:
-                state[p.location[0]][p.location[1]] = ' '
-                p.location = p.spawnPt()
-                for g in ghosts:
-                    state[g.location[0]][g.location[1]] = ' '
+                board.reset(p, ghosts)
                 ghosts = []
                 p.lives -= 1
-                state[p.location[0]][p.location[1]] = 'P'
-                state[ghostSpawn[0]][ghostSpawn[1]] = 'G'
                 dead = True
         # Start of Score Calculation
         if score >= 1 : score -= 1
@@ -86,4 +81,4 @@ if __name__ == "__main__":
              ['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=']]
     # Start game with above state and 2 ghosts
     board = Board.GameBoard(state)
-    startGame(state, [G.Ghost(state, board.ghostSpawnPt), G.Ghost(state, board.ghostSpawnPt)])
+    startGame(state, [G.Ghost(board.ghostSpawnPt), G.Ghost(board.ghostSpawnPt)])

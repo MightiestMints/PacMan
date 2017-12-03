@@ -80,6 +80,14 @@ class GameBoard(object):
                     dots += 1
         return dots
 
+    def reset(self, pacMan, ghosts):
+        for ghost in ghosts:
+            self.board[ghost.location[0]][ghost.location[1]] = ' '
+        self.board[self.ghostSpawnPt[0]][self.ghostSpawnPt[1]] = 'G'
+        self.board[pacMan.location[0]][pacMan.location[1]] = ' '
+        self.board[pacMan.respawn[0]][pacMan.respawn[1]] = 'p'
+        pacMan.location = pacMan.respawn
+
     def move(self, target, x, y):
         tarX = target.location[0]
         tarY = target.location[1]
@@ -94,5 +102,18 @@ class GameBoard(object):
              self.board[tarX][tarY] = ' '
              target.location = x,y
         else:
-            print("should not be in here"
-                  "")
+            if self.board[x][y] is '.':
+             self.board[x][y] = 'g'
+             if target.onDot:
+                 self.board[tarX][tarY] = '.'
+                 target.onDot = False
+             else: self.board[tarX][tarY] = ' '
+             target.onDot = True
+             target.location = x,y
+            else:
+             self.board[x][y] = 'g'
+             if target.onDot:
+                 self.board[tarX][tarY] = '.'
+                 target.onDot = False
+             else: self.board[tarX][tarY] = ' '
+             target.location = x,y
