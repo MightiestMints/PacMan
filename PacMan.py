@@ -5,9 +5,8 @@ import copy as copy
 class PacMan(object):
 
     # Constructor
-    def __init__(self, state, respawn):
+    def __init__(self, respawn):
         self.lives = 3                                      # Lives left
-        self.dotsLeft = self.calculateDotsLeft(state)       # Dots left
         self.location = respawn                             # 2D indices of Pac Man's location
         self.respawn = respawn                              # 2D indices of Pac Man's spawn point
 
@@ -16,55 +15,52 @@ class PacMan(object):
         return self.respawn
 
     # Returns all possible actions (up, down, left, right)
-    def actions(self, state):
+    def actions(self, board):
         actions = []
         pacX = self.location[0]
         pacY = self.location[1]
-        stateX = self.getStateSize(state)[0]
-        stateY = self.getStateSize(state)[1]
 
         # Check up
-        if (state[pacX - 1][pacY] != '=') & (state[pacX - 1][pacY] != '|'):
+        if (board[(pacX - 1 , pacY)] != '=') & (board[(pacX - 1 , pacY)] != '|'):
             actions.append("up")
         # Check down
-        if (state[pacX + 1][pacY] != '=') & (state[pacX + 1][pacY] != '|'):
+        if (board[(pacX + 1 , pacY)] != '=') & (board[(pacX + 1 , pacY)] != '|'):
             actions.append("down")
         # Check left
-        if (state[pacX][pacY - 1] != '|') & (state[pacX][pacY - 1] != '='):
+        if (board[(pacX , pacY - 1)] != '|') & (board[(pacX , pacY - 1)] != '='):
             actions.append("left")
         # Check right
-        if (state[pacX][pacY + 1] != '|') & (state[pacX][pacY + 1] != '='):
+        if (board[(pacX , pacY + 1)] != '|') & (board[(pacX , pacY + 1)] != '='):
             actions.append("right")
 
         return actions
 
     # Returns a tuple containing (state after an action is taken,
-    def takeAction(self, state, action):
-        newState = copy.deepcopy(state)
+    def takeAction(self, board, action):
         newLoc = None
 
         # Get location of new position after action is taken
         if action == 'up':
             #check for teloportation
-            if state[self.location[0] - 1][self.location[1]] == 't':
+            if board[(self.location[0] - 1 , self.location[1])] == 't':
                 newLoc = (len(state) - 2, self.location[1])
             else:
                 newLoc = (self.location[0] - 1, self.location[1])
         elif action == 'down':
             #check for teleportation
-            if state[self.location[0] + 1][self.location[1]] == 't':
+            if board[(self.location[0] + 1,self.location[1])] == 't':
                 newLoc = (1, self.location[1])
             else:
                 newLoc = (self.location[0] + 1, self.location[1])
         elif action == 'left':
             #check for telelporation
-            if state[self.location[0]][self.location[1] - 1] == 't':
+            if board[(self.location[0] , self.location[1] - 1)] == 't':
                 newLoc = (self.location[0], len(state[0]) - 2)
             else:
                 newLoc = (self.location[0], self.location[1] - 1)
         elif action == 'right':
             #check for teleporation
-            if state[self.location[0]][self.location[1] + 1] == 't':
+            if board[(self.location[0] , self.location[1] + 1)] == 't':
                 newLoc = (self.location[0],1)
             else:
                 newLoc = (self.location[0], self.location[1] + 1)
@@ -102,15 +98,6 @@ class PacMan(object):
         else:
             return spawnLoc
 
-    # Calculates and returns the number of dots in a given state.
-    # Should only be called by constructor (dotsLeft updated in takeAction)
-    def calculateDotsLeft(self, state):
-        dots = 0
-        for i in range(len(state)):
-            for j in range(len(state[i])):
-                if state[i][j]  == '.':
-                    dots += 1
-        return dots
 
     # Returns the dots left on the board
     def dotsLeft(self):
