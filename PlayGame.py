@@ -25,23 +25,23 @@ def startGame(state, ghostsAvailable, intelligenceLevel=3):
     # Current Score of the game stored as an Integer
     board = Board.GameBoard(state)
     score = 0
-    p = P.PacMan(state, board.pacManSpawnPt)
+    p = P.PacMan(board.pacManSpawnPt)
     ghostSpawn = board.ghostSpawnPt
     turn = 1
     dead = False
     ghosts = []
-    while not p.gameOver():
+    while not p.gameOver(board):
         if(dead):
             print("You died!")
             dead = False
-        print("Lives:", p.getLives(), "\tDots left:", p.dotsLeft, "\tLocation:", p.location, "\tTurn:", turn, "\tScore:", score)
+        print("Lives:", p.getLives(), "\tDots left:", board.dotsLeft, "\tLocation:", p.location, "\tTurn:", turn, "\tScore:", score)
         # Number of dots remaining and lives at the beginning of the turn. This is used in score calculation.
-        beginNumDots = p.dotsLeft
+        beginNumDots = board.dotsLeft
         beginNumLives = p.getLives()
         if turn % 3 == 0 and len(ghosts) < len(ghostsAvailable):
             ghosts.append(ghostsAvailable[len(ghosts)])
-        p.printState(state)
-        print("\nActions available:", p.actions(state))
+        print(board, end='')
+        print("\nActions available:", p.actions(board))
         for ghost in ghosts:
             if intelligenceLevel is 0:
                 state = ghost.randomMove(state)
@@ -51,22 +51,17 @@ def startGame(state, ghostsAvailable, intelligenceLevel=3):
                 state = ghost.intelligentMove(state, p.location)
             else:
                 state = ghost.intelligentMove(state, p.location, maxDepth=8)
-        state = p.takeAction(state, input("Action: "))
+        state = p.takeAction(board, input("Action: "))
         # Respawn if Pac Man is killed
         for ghost in ghosts:
             if p.location == ghost.location:
-                state[p.location[0]][p.location[1]] = ' '
-                p.location = p.spawnPt()
-                for g in ghosts:
-                    state[g.location[0]][g.location[1]] = ' '
+                board.reset(p, ghosts)
                 ghosts = []
                 p.lives -= 1
-                state[p.location[0]][p.location[1]] = 'P'
-                state[ghostSpawn[0]][ghostSpawn[1]] = 'G'
                 dead = True
         # Start of Score Calculation
         if score >= 1 : score -= 1
-        if beginNumDots > p.dotsLeft : score += 10
+        if beginNumDots > board.dotsLeft : score += 10
         if beginNumLives > p.getLives() :
             if score > 100:
                 score -= 100
@@ -77,7 +72,7 @@ def startGame(state, ghostsAvailable, intelligenceLevel=3):
     # Game over
     if p.lives == 0:
         print("Game over: You died!")
-    else: print("Game over: You ate all the dots with", p.getLives(), "lives left! Your score was ", score)
+    else: print("Game over: You ate all the dots with", p.getLives(), "lives left!")
 
 if __name__ == "__main__":
 
@@ -91,4 +86,4 @@ if __name__ == "__main__":
              ['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=']]
     # Start game with above state and 2 ghosts
     board = Board.GameBoard(state)
-    startGame(state, [G.Ghost(state, board.ghostSpawnPt)], 3)
+    startGame(state, [G.Ghost(board.ghostSpawnPt), G.Ghost(board.ghostSpawnPt)], 0)
