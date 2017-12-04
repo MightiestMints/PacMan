@@ -43,7 +43,6 @@ def startGame(state, ghostsAvailable, intelligenceLevel=3):
         p.printState(state)
         print("\nActions available:", p.actions(state))
         for ghost in ghosts:
-            print("Taking a ghost action")
             if intelligenceLevel is 0:
                 state = ghost.randomMove(state)
             elif intelligenceLevel is 1:
@@ -92,4 +91,4 @@ if __name__ == "__main__":
              ['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=']]
     # Start game with above state and 2 ghosts
     board = Board.GameBoard(state)
-    startGame(state, [G.Ghost(state, board.ghostSpawnPt)], 1)
+    startGame(state, [G.Ghost(state, board.ghostSpawnPt)], 3)
