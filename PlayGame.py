@@ -44,13 +44,13 @@ def startGame(state, ghostsAvailable, intelligenceLevel=3):
         print("\nActions available:", p.actions(board))
         for ghost in ghosts:
             if intelligenceLevel is 0:
-                state = ghost.randomMove(state)
+                state = ghost.randomMove(board)
             elif intelligenceLevel is 1:
-                state = ghost.takeActionShortestDistance(state, p.location)
+                state = ghost.takeActionShortestDistance(board, p.location)
             elif intelligenceLevel is 2:
-                state = ghost.intelligentMove(state, p.location)
+                state = ghost.intelligentMove(board, p.location)
             else:
-                state = ghost.intelligentMove(state, p.location, maxDepth=8)
+                state = ghost.intelligentMove(board, p.location, maxDepth=8)
         state = p.takeAction(board, input("Action: "))
         # Respawn if Pac Man is killed
         for ghost in ghosts:
@@ -60,9 +60,11 @@ def startGame(state, ghostsAvailable, intelligenceLevel=3):
                 p.lives -= 1
                 dead = True
         # Start of Score Calculation
-        if score >= 1 : score -= 1
-        if beginNumDots > board.dotsLeft : score += 10
-        if beginNumLives > p.getLives() :
+        if score >= 1 :
+            score -= 1
+        if beginNumDots > board.dotsLeft:
+            score += 10
+        if beginNumLives > p.getLives():
             if score > 100:
                 score -= 100
             else: score = 0
@@ -78,7 +80,7 @@ if __name__ == "__main__":
 
     # Really basic state to start with
     state = [['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '='],
-             ['|', 'G', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|'],
+             ['|', ' ', ' ', ' ', ' ', 'G', ' ', ' ', ' ', ' ', '|'],
              ['|', ' ', '=', '=', '=', ' ', '=', '=', '=', ' ', '|'],
              ['t', ' ', '|', ' ', '|', ' ', '|', ' ', '|', ' ', 't'],
              ['|', ' ', '=', '=', '=', ' ', '=', '=', '=', ' ', '|'],
@@ -86,4 +88,4 @@ if __name__ == "__main__":
              ['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=']]
     # Start game with above state and 2 ghosts
     board = Board.GameBoard(state)
-    startGame(state, [G.Ghost(board.ghostSpawnPt), G.Ghost(board.ghostSpawnPt)], 0)
+    startGame(state, [G.Ghost(board.ghostSpawnPt)], 3)

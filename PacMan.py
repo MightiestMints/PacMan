@@ -5,9 +5,8 @@ import copy as copy
 class PacMan(object):
 
     # Constructor
-    def __init__(self, state, respawn):
+    def __init__(self, respawn):
         self.lives = 3                                      # Lives left
-        self.dotsLeft = self.calculateDotsLeft(state)       # Dots left
         self.location = respawn                             # 2D indices of Pac Man's location
         self.respawn = respawn                              # 2D indices of Pac Man's spawn point
 
@@ -16,116 +15,59 @@ class PacMan(object):
         return self.respawn
 
     # Returns all possible actions (up, down, left, right)
-    def actions(self, state):
+    def actions(self, board):
         actions = []
         pacX = self.location[0]
         pacY = self.location[1]
-        stateX = self.getStateSize(state)[0]
-        stateY = self.getStateSize(state)[1]
 
         # Check up
-        if (state[pacX - 1][pacY] != '=') & (state[pacX - 1][pacY] != '|'):
+        if (board[(pacX - 1 , pacY)] != '=') & (board[(pacX - 1 , pacY)] != '|'):
             actions.append("up")
         # Check down
-        if (state[pacX + 1][pacY] != '=') & (state[pacX + 1][pacY] != '|'):
+        if (board[(pacX + 1 , pacY)] != '=') & (board[(pacX + 1 , pacY)] != '|'):
             actions.append("down")
         # Check left
-        if (state[pacX][pacY - 1] != '|') & (state[pacX][pacY - 1] != '='):
+        if (board[(pacX , pacY - 1)] != '|') & (board[(pacX , pacY - 1)] != '='):
             actions.append("left")
         # Check right
-        if (state[pacX][pacY + 1] != '|') & (state[pacX][pacY + 1] != '='):
+        if (board[(pacX , pacY + 1)] != '|') & (board[(pacX , pacY + 1)] != '='):
             actions.append("right")
 
         return actions
 
     # Returns a tuple containing (state after an action is taken,
-    def takeAction(self, state, action):
-        newState = copy.deepcopy(state)
-        newLoc = None
+    def takeAction(self, board, action):
 
         # Get location of new position after action is taken
         if action == 'up':
-            #check for teloportation
-            if state[self.location[0] - 1][self.location[1]] == 't':
-                newLoc = (len(state) - 2, self.location[1])
+            #check for teleportation
+            if board[(self.location[0] - 1 , self.location[1])] == 't':
+                board.move( self , board.height - 2, self.location[1])
             else:
-                newLoc = (self.location[0] - 1, self.location[1])
+                board.move( self, self.location[0] - 1, self.location[1])
         elif action == 'down':
             #check for teleportation
-            if state[self.location[0] + 1][self.location[1]] == 't':
-                newLoc = (1, self.location[1])
+            if board[(self.location[0] + 1,self.location[1])] == 't':
+                board.move(self, 1, self.location[1])
             else:
-                newLoc = (self.location[0] + 1, self.location[1])
+                board.move(self, self.location[0] + 1, self.location[1])
         elif action == 'left':
-            #check for telelporation
-            if state[self.location[0]][self.location[1] - 1] == 't':
-                newLoc = (self.location[0], len(state[0]) - 2)
+            #check for teleportation
+            if board[(self.location[0] , self.location[1] - 1)] == 't':
+                board.move(self, self.location[0], board.length - 2)
             else:
-                newLoc = (self.location[0], self.location[1] - 1)
+                board.move(self, self.location[0], self.location[1] - 1)
         elif action == 'right':
-            #check for teleporation
-            if state[self.location[0]][self.location[1] + 1] == 't':
-                newLoc = (self.location[0],1)
+            #check for teleportation
+            if board[(self.location[0] , self.location[1] + 1)] == 't':
+                board.move(self, self.location[0],1)
             else:
-                newLoc = (self.location[0], self.location[1] + 1)
+                board.move(self, self.location[0], self.location[1] + 1)
 
-        # Eat dot
-        s = newState[newLoc[0]][newLoc[1]]
-        if s == '.':
-            self.dotsLeft -= 1
-
-        # Update state and location
-        #if newState[newLoc[0]][newLoc[1]] != 'P':
-        newState[newLoc[0]][newLoc[1]] = 'p'
-        #if newState[self.location[0]][self.location[1]] != 'P':
-        newState[self.location[0]][self.location[1]] = ' '
-        self.location = newLoc
-        return newState
-
-    # Returns a tuple of the x and y sizes of the state
-    def getStateSize(self, state):
-        return len(state), len(state[0])
-
-    # Calculates and returns the 2D list location of PacMan, or, if he hasn't spawned yet, his spawn point
-    # Should only be called by constructor (location updated in takeAction)
-    def calculateLocation(self, state):
-        spawnLoc = None
-        currentLoc = None
-        for i in range(len(state)):
-            for j in range(len(state[i])):
-                if state[i][j] == 'P':
-                    spawnLoc = i, j
-                elif state[i][j] == 'p':
-                    currentLoc = i, j
-        if currentLoc != None:
-            return currentLoc
-        else:
-            return spawnLoc
-
-    # Calculates and returns the number of dots in a given state.
-    # Should only be called by constructor (dotsLeft updated in takeAction)
-    def calculateDotsLeft(self, state):
-        dots = 0
-        for i in range(len(state)):
-            for j in range(len(state[i])):
-                if state[i][j]  == '.':
-                    dots += 1
-        return dots
-
-    # Returns the dots left on the board
-    def dotsLeft(self):
-        return self.dotsLeft
-
-    # Prints the current state to the console. Takes in a 2D list of any size as a parameter
-    def printState(self, state):
-        for i in range(len(state)):
-            for j in range(len(state[i])):
-                print(state[i][j], end='')
-            print()
 
     # Returns true if the game is over (pac-man is eaten by a ghost or has eaten all the dots) or false if not over
-    def gameOver(self):
-        return (self.lives == 0) | (self.dotsLeft == 0)
+    def gameOver(self, board):
+        return (self.lives == 0) | (board.dotsLeft == 0)
 
     # Returns the amount of lives Pac Man has left
     def getLives(self):
