@@ -40,7 +40,7 @@ class PacMan(object):
 
         # Get location of new position after action is taken
         if action == 'up':
-            #check for teloportation
+            #check for teleportation
             if board[(self.location[0] - 1 , self.location[1])] == 't':
                 board.move( self , board.height - 2, self.location[1])
             else:
@@ -52,13 +52,13 @@ class PacMan(object):
             else:
                 board.move(self, self.location[0] + 1, self.location[1])
         elif action == 'left':
-            #check for telelporation
+            #check for teleportation
             if board[(self.location[0] , self.location[1] - 1)] == 't':
-                board.move(self.location[0], board.length - 2)
+                board.move(self, self.location[0], board.length - 2)
             else:
                 board.move(self, self.location[0], self.location[1] - 1)
         elif action == 'right':
-            #check for teleporation
+            #check for teleportation
             if board[(self.location[0] , self.location[1] + 1)] == 't':
                 board.move(self, self.location[0],1)
             else:

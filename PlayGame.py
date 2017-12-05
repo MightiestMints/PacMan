@@ -21,7 +21,7 @@ def getDots(state):
 # Creates Pac Man and starts the game. State and Ghost objects are passed in as parameters
 # Right now the state is advancing a turn only after a move is selected. This will change when Pac Man gets his smarts
 # Currently spawns a ghost every 3 turns
-def startGame(state, ghostsAvailable):
+def startGame(state, ghostsAvailable, intelligenceLevel=3):
     # Current Score of the game stored as an Integer
     board = Board.GameBoard(state)
     score = 0
@@ -43,9 +43,14 @@ def startGame(state, ghostsAvailable):
         print(board, end='')
         print("\nActions available:", p.actions(board))
         for ghost in ghosts:
-            #state = ghost.intelligentMove(state, p.location)
-            state = ghost.takeActionShortestDistance(board, p.location)
-            #state = ghost.randomMove(state)
+            if intelligenceLevel is 0:
+                state = ghost.randomMove(board)
+            elif intelligenceLevel is 1:
+                state = ghost.takeActionShortestDistance(board, p.location)
+            elif intelligenceLevel is 2:
+                state = ghost.intelligentMove(board, p.location)
+            else:
+                state = ghost.intelligentMove(board, p.location, maxDepth=8)
         state = p.takeAction(board, input("Action: "))
         # Respawn if Pac Man is killed
         for ghost in ghosts:
@@ -55,9 +60,11 @@ def startGame(state, ghostsAvailable):
                 p.lives -= 1
                 dead = True
         # Start of Score Calculation
-        if score >= 1 : score -= 1
-        if beginNumDots > board.dotsLeft : score += 10
-        if beginNumLives > p.getLives() :
+        if score >= 1 :
+            score -= 1
+        if beginNumDots > board.dotsLeft:
+            score += 10
+        if beginNumLives > p.getLives():
             if score > 100:
                 score -= 100
             else: score = 0
@@ -73,7 +80,7 @@ if __name__ == "__main__":
 
     # Really basic state to start with
     state = [['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '='],
-             ['|', 'G', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|'],
+             ['|', ' ', ' ', ' ', ' ', 'G', ' ', ' ', ' ', ' ', '|'],
              ['|', ' ', '=', '=', '=', ' ', '=', '=', '=', ' ', '|'],
              ['t', ' ', '|', ' ', '|', ' ', '|', ' ', '|', ' ', 't'],
              ['|', ' ', '=', '=', '=', ' ', '=', '=', '=', ' ', '|'],
@@ -81,4 +88,4 @@ if __name__ == "__main__":
              ['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=']]
     # Start game with above state and 2 ghosts
     board = Board.GameBoard(state)
-    startGame(state, [G.Ghost(board.ghostSpawnPt), G.Ghost(board.ghostSpawnPt)])
+    startGame(state, [G.Ghost(board.ghostSpawnPt)], 3)
