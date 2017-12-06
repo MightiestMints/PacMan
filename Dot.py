@@ -11,3 +11,6 @@ class Dot(object):
 
     def powerDot(self):
         return self.powerDot
+
+    def __repr__(self):
+        return str("Dot location: " , self.location)
