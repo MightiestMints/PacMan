@@ -85,60 +85,56 @@ class PacMan(object):
                 min = self.calculateDistance(dot)
             if self.calculateDistance(dot) == min:
                 closestDots.append(dot)
+        return closestDots
 
+    # Returns the directions to avoid if ghost is too close
     def directionToObj(self, obj):
+        directions = []
         x = self.location[0] - obj.location[0]
         y = self.location[1] - obj.location[1]
 
-        if x == 0:
-            return None
-        else:
-            if x > 0:
-                return 'right'
-            else:
-                return 'left'
+        if x > 0:
+            directions.append('up')
+        if x < 0:
+            directions.append('down')
+        if y > 0:
+            directions.append('left')
+        if y < 0:
+            directions.append('right')
 
-        if y == 0:
-            return None
-        else:
-            if y > 0:
-                return 'down'
-            else:
-                return 'up'
+        return directions
 
-    def fearFactor(self, dot, ghosts):
+    # Returns true if ghost is within manhattan distance of 3 from pacman
+    def fearFactor(self, ghosts):
         for ghost in ghosts:
-            directionToGhost = self.directionToObj(ghost)
-            if(directionToGhost == None):
-                return False
+            distance = self.calculateDistance(ghost)
+            if(distance < 3):
+                return True
             else:
-                directionToDot = self.directionToObj(dot)
-                if directionToGhost == directionToDot:
-                    distanceToGhost = self.calculateDistance(ghost)
-                    if(distanceToGhost < 3):
-                        return True
-                    else:
-                        return False
+                return False
 
 
     # PacMan "blood hunter" AI. Copied from Ghost.
     # Helps Intelligent Move in finding the best direction to take to get to nearest dot
-    def depthLimitedSearch(self, board, locOfPacman, ghosts, closestDots, actions, takeAction, depthLimit):
+    def depthLimitedSearch(self, board, ghosts, closestDots, actions, takeAction, depthLimit):
+        if PacMan.fearFactor(self, ghosts):
+            return 'run'
+
         for dot in closestDots:
             if self.location == dot.location:
-                if not self.fearFactor(dot, ghosts):
-                    return []
+                return []
 
         if depthLimit == 0:
             return "cutoff"
 
         cutOffOccurred = False
-        for action in actions(self, board):
+        for action in PacMan.actions(self, board):
             copyBoard = copy.deepcopy(board)
             copySelf = copy.deepcopy(self)
             takeAction(copySelf, copyBoard, action)
-            result = PacMan.depthLimitedSearch(copySelf, copyBoard, locOfPacman, actions, takeAction,
+            result = PacMan.depthLimitedSearch(copySelf, copyBoard, ghosts, closestDots, actions, takeAction,
                                               depthLimit - 1)
+
             if result is "cutoff":
                 cutOffOccurred = True
             elif result is not "failure":
@@ -150,7 +146,7 @@ class PacMan(object):
 
     # Causes the ghost to scan through the board, making the most intelligent shortest path decision
     def intelligentMove(self, board, ghosts, maxDepth=4):
-        closestDots = self.getClosestDots(board)
+        closestDots = PacMan.getClosestDots(self, board)
 
         for dot in closestDots:
             if self.location == dot.location:
@@ -159,14 +155,32 @@ class PacMan(object):
         for depth in range(maxDepth):
             result = PacMan.depthLimitedSearch(self, board, ghosts, closestDots, PacMan.actions, PacMan.takeAction,
                                               depth)
-            if result != "cutoff" and result != "failure":
-                print("Ghost found intelligent move. Returning intelligentMove")
+            if result != "cutoff" and result != "failure" and result != 'run':
+                print("PacMan found intelligent move. Returning intelligentMove")
                 return PacMan.takeAction(self, board, result)
-        # If we get here, this means we were cutoff. Essentially, we couldn't find Pacman within maxDepth moves
-        # At this point, we just want to make a move in the direction that Pacman is in
-        print("PacMan didn't find intelligent move. Running randomMove")
-        return PacMan.takeActionShortestDistance(self, board, locOfPacman)
 
+        if(result == 'run'):
+            PacMan.runFromGhost(self, board, ghosts,  PacMan.actions)
+        else:
+            PacMan.makeRandomMove(self, board)
+
+    def runFromGhost(self, board, ghosts, actions):
+        print("running from ghosts")
+        listOfActions = PacMan.actions(self, board)
+        for ghost in ghosts:
+            #Find direction towards ghost, avoid it...
+            directions = self.directionToObj(ghost)
+            for direction in directions:
+                for action in listOfActions:
+                    if action == direction:
+                        listOfActions.remove(direction)
+        if(listOfActions):
+            PacMan.takeAction(self, board, np.random.choice(listOfActions))
+        else:
+            PacMan.makeRandomMove(self, board)
+
+    def makeRandomMove(self, board):
+        PacMan.takeAction(self, board, PacMan.actions(self, board))
 
     # Returns true if the game is over (pac-man is eaten by a ghost or has eaten all the dots) or false if not over
     def gameOver(self, board):
