@@ -15,6 +15,10 @@ class Dot(object):
     def powerDot(self):
         return self.powerDot
 
+    def __repr__(self):
+        string = "Dot location: " , self.location[0] , ", " , self.location[1]
+        return str(string)
+
 
 class GameBoard(object):
 
@@ -22,7 +26,7 @@ class GameBoard(object):
     #Constructor (Work in progress)
     def __init__(self, startState):
         self.board = copy.deepcopy(startState)
-        self.dots = self.getDots(startState)
+        self.dots = self.setDots(startState)
         self.ghostSpawnPt = self.findGhostSpawnPt(startState)
         self.pacManSpawnPt = self.findPacManSpawnPt(startState)
         self.height = len(startState)
@@ -52,7 +56,7 @@ class GameBoard(object):
                     spawnLoc = i, j
         return spawnLoc
 
-    def getDots(self, state):
+    def setDots(self, state):
         dots = []
         for x, i in enumerate(state):
             for y, j in enumerate(state[x]):
@@ -88,12 +92,21 @@ class GameBoard(object):
         self.board[pacMan.respawn[0]][pacMan.respawn[1]] = 'p'
         pacMan.location = pacMan.respawn
 
+    def removeDot(self, x, y):
+        for dot in self.dots:
+            if(dot.location[0] == x and dot.location[1] == y):
+                self.dots.remove(dot)
+
+    def getDots(self):
+        return self.dots
+
     def move(self, target, x, y):
         tarX = target.location[0]
         tarY = target.location[1]
         if isinstance(target, P.PacMan):
             if self.board[x][y] is '.':
              self.dotsLeft = self.dotsLeft - 1
+             self.removeDot(x, y)
              self.board[x][y] = 'p'
              self.board[tarX][tarY] = ' '
              target.location = x,y
