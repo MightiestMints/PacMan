@@ -90,12 +90,7 @@ class PacMan(object):
         if np.random.uniform() < epsilon:
             # Make a random move
             return random.choice(moves)
-        else:
-            # #Choose the move with the least total steps
-            # Qs = np.array([Q.get(PacMan.boardMoveTuple(self, state, m), 0) for m in moves])
-            # return moves[np.argmin(Qs)]
-
-            # #Choose the move with the highest score
+        else:# #Choose the move with the highest score
             Qs = np.array([Q.get(PacMan.boardMoveTuple(self, state, m), 0) for m in moves])
             return moves[np.argmax(Qs)]
 
@@ -106,15 +101,13 @@ class PacMan(object):
         epsilon = 1.0
         Q = {}
         scores = []
-        beginSelf = copy.deepcopy(self)
-        beginBoard = copy.deepcopy(board)
 
         for nGames in range(maxGames):
-            print("NEW GAME")
+            print("Game:", nGames, "; Starting game.")
             epsilon *= epsilonDecayRate
             step = 0
-            state = copy.deepcopy(beginBoard)
-            copySelf = copy.deepcopy(beginSelf)
+            state = copy.deepcopy(board)
+            copySelf = copy.deepcopy(self)
             ghosts = []
             score = 0
             done = False
@@ -122,7 +115,7 @@ class PacMan(object):
 
             while not done and not copySelf.gameOver(state):
                 copyGhosts = copy.deepcopy(ghostsAvailable)
-                print(state,end='')
+                #print(state,end='')
                 step += 1
                 copyState = copy.deepcopy(state)
                 move = PacMan.epsilonGreedy(copySelf, epsilon, Q, copyState)
@@ -131,38 +124,29 @@ class PacMan(object):
                 # 1. ghosts, because we need to keep passing in the array of ghosts so that they can make moves
                 # 2. self, because we need to update PacMan object values
                 # 3. stateNew, because we have a new board state
-                _, ghosts, copySelf, stateNew, score, _ = PlayGame.runSingleTurn(step, ghosts, copyGhosts, intelligenceLevel, copySelf, copyState, score, dead, move)
+                _, ghosts, copySelf, stateNew, score, dead = PlayGame.runSingleTurn(step, ghosts, copyGhosts, intelligenceLevel, copySelf, copyState, score, dead, move)
                 # Full return: turn, ghosts, p, board, score, dead
 
                 if PacMan.boardMoveTuple(copySelf, copyState, move) not in Q:
                     Q[PacMan.boardMoveTuple(copySelf, copyState, move)] = 0  # initial Q value for new state,move
 
-                # if stateNew.dotsLeft == 0:
-                #     # Game completed! PacMan won!
-                #     Q[PacMan.boardMoveTuple(copySelf, copyState, move)] = 0
-                #     done = True
-                #
-                # if step > 1:
-                #     Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)] += rho * (1 + Q[PacMan.boardMoveTuple(copySelf, copyState, move)] - Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)])
-
                 if stateNew.dotsLeft == 0:
                     # Game completed! PacMan won!
-                    Q[PacMan.boardMoveTuple(copySelf, copyState, move)] = score
+                    Q[PacMan.boardMoveTuple(copySelf, copyState, move)] = 1
+                    print("Game:", nGames, "; Pacman won!")
                     done = True
+                else:
+                    if dead:
+                        if copySelf.lives == 0:
+                            Q[PacMan.boardMoveTuple(copySelf, copyState, move)] += rho * (-1 - Q[PacMan.boardMoveTuple(copySelf, copyState, move)])
+                            print("Game:", nGames, "; Pacman ran out of lives. Starting new game...")
+                            score = 0
+                            done = True
 
                 if step > 1:
-                    #Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)] += rho * (1 + Q[PacMan.boardMoveTuple(copySelf, copyState, move)] - Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)])
-                    Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)] = score
+                    Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)] += rho * (Q[PacMan.boardMoveTuple(copySelf, copyState, move)] - Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)])
 
                 stateOld, moveOld = copyState, move
                 state = stateNew
-
-                if self.lives == 0:
-                    # Game over! Set step = infinity and break out
-                    step = float('inf')
-                    score = 0
-                    done = True
-                    break
-            #steps.append(step)
             scores.append(score)
         return Q, scores

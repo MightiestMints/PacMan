@@ -81,7 +81,6 @@ class Ghost(object):
                 return Ghost.takeAction(self, board, action)
             if (action == 'right') & (xDiff > 0):
                 return Ghost.takeAction(self, board, action)
-        print("Taking random action from takeActionShortestDistance")
         return Ghost.randomMove(self, board)
 
     # Helps Intelligent Move in finding the best direction to take to get to Pacman

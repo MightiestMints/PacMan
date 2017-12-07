@@ -78,8 +78,8 @@ def startGame(state, ghostsAvailable, intelligenceLevel=3):
     dead = False
     ghosts = []
 
-    #Q, stepsToGoal = p.trainQ(board, 50, 0.5, 0.7, ghostsAvailable, intelligenceLevel)
-    #print(stepsToGoal)
+    #Q, scores = p.trainQ(board, 50, 0.5, 0.7, ghostsAvailable, intelligenceLevel)
+    #print(scores)
 
 
     while not p.gameOver(board):
