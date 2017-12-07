@@ -3,7 +3,7 @@ import random
 import numpy as np
 import PlayGame as PlayGame
 
-# Implements the learning algorithms that pac-man will use to manuever through the game board, and avoid ghost/eat dots
+# Implements the learning algorithms that pac-man will use to maneuver through the game board, and avoid ghost/eat dots
 # 3 class variables: lives (remaining lives), dotsLeft (dots remaining on the board), & location (2D list index of PacMan)
 class PacMan(object):
 
@@ -84,6 +84,19 @@ class PacMan(object):
         boardTuple = tuple(boardTuple)
         return (boardTuple, move)
 
+    # Returns the move that is the best available from the trained Q table
+    def useReinforcementTable(self, board, Q):
+        moves = PacMan.actions(self, board)
+        bestValue = 0
+        bestMove = ""
+        for move in moves:
+            value = Q.get(PacMan.boardMoveTuple(self, board, move), 0)
+            if value > bestValue:
+                bestValue = value
+                bestMove = move
+        board = PacMan.takeAction(self, board, bestMove)
+        return board
+
     # Choose a random move if random.uniform() < epsilon, otherwise, choose the move that has the least total moves to eat all dots
     def epsilonGreedy(self, epsilon, Q, state):
         moves = PacMan.actions(self, state)
@@ -94,7 +107,7 @@ class PacMan(object):
             Qs = np.array([Q.get(PacMan.boardMoveTuple(self, state, m), 0) for m in moves])
             return moves[np.argmax(Qs)]
 
-    def trainQ(self, board, nRepetitions, learningRate, epsilonDecayFactor, ghostsAvailable, intelligenceLevel):
+    def trainQ(self, board, nRepetitions, learningRate, epsilonDecayFactor, ghostsAvailable, intelligenceLevel, verbose=False):
         maxGames = nRepetitions
         rho = learningRate
         epsilonDecayRate = epsilonDecayFactor
@@ -103,7 +116,8 @@ class PacMan(object):
         scores = []
 
         for nGames in range(maxGames):
-            print("Game:", nGames, "; Starting game.")
+            if verbose:
+                print("Game:", nGames, "; Starting game.")
             epsilon *= epsilonDecayRate
             step = 0
             state = copy.deepcopy(board)
@@ -111,11 +125,12 @@ class PacMan(object):
             ghosts = []
             score = 0
             done = False
-            dead = False
 
             while not done and not copySelf.gameOver(state):
+                dead = False
                 copyGhosts = copy.deepcopy(ghostsAvailable)
-                #print(state,end='')
+                # if verbose:
+                #     print(state,end='')
                 step += 1
                 copyState = copy.deepcopy(state)
                 move = PacMan.epsilonGreedy(copySelf, epsilon, Q, copyState)
@@ -127,26 +142,35 @@ class PacMan(object):
                 _, ghosts, copySelf, stateNew, score, dead = PlayGame.runSingleTurn(step, ghosts, copyGhosts, intelligenceLevel, copySelf, copyState, score, dead, move)
                 # Full return: turn, ghosts, p, board, score, dead
 
+                #Initial value
                 if PacMan.boardMoveTuple(copySelf, copyState, move) not in Q:
                     Q[PacMan.boardMoveTuple(copySelf, copyState, move)] = 0  # initial Q value for new state,move
 
                 if stateNew.dotsLeft == 0:
-                    # Game completed! PacMan won!
-                    Q[PacMan.boardMoveTuple(copySelf, copyState, move)] = 1
-                    print("Game:", nGames, "; Pacman won!")
+                    # Pacman won. Big positive reinforcement
+                    Q[PacMan.boardMoveTuple(copySelf, copyState, move)] += rho * (5 + Q[PacMan.boardMoveTuple(copySelf, copyState, move)])
+                    if verbose:
+                        print("Game:", nGames, "; Pacman won!")
                     done = True
                 else:
-                    if dead:
-                        if copySelf.lives == 0:
-                            Q[PacMan.boardMoveTuple(copySelf, copyState, move)] += rho * (-1 - Q[PacMan.boardMoveTuple(copySelf, copyState, move)])
+                    if stateNew.dotsLeft < state.dotsLeft:
+                        #Pacman ate a dot. Small positive reinforcement
+                        Q[PacMan.boardMoveTuple(copySelf, copyState, move)] += rho * (1 - Q[PacMan.boardMoveTuple(copySelf, copyState, move)])
+                    if dead == True:
+                        #Pacman lost a life. Small negative reinforcement
+                        Q[PacMan.boardMoveTuple(copySelf, copyState, move)] += rho * (-1 - Q[PacMan.boardMoveTuple(copySelf, copyState, move)])
+                    if copySelf.lives == 0:
+                        # Pacman lost. Big negative reinforcement
+                        Q[PacMan.boardMoveTuple(copySelf, copyState, move)] += rho * (-5 - Q[PacMan.boardMoveTuple(copySelf, copyState, move)])
+                        if verbose:
                             print("Game:", nGames, "; Pacman ran out of lives. Starting new game...")
-                            score = 0
-                            done = True
+                        score = 0
+                        done = True
 
                 if step > 1:
                     Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)] += rho * (Q[PacMan.boardMoveTuple(copySelf, copyState, move)] - Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)])
 
-                stateOld, moveOld = copyState, move
+                stateOld, moveOld, scoreOld = copyState, move, score
                 state = stateNew
             scores.append(score)
         return Q, scores

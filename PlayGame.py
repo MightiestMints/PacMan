@@ -15,7 +15,7 @@ def getDots(state):
                 dots.append(d.Dot(x, y, True))
     return dots
 
-def runSingleTurn(turn, ghosts, ghostsAvailable, intelligenceLevel, p, board, score, dead, move="", pacmanIntelligent=False):
+def runSingleTurn(turn, ghosts, ghostsAvailable, intelligenceLevel, p, board, score, dead, move="", pacmanIntelligent=False, Q=[]):
     beginNumDots = board.dotsLeft
     beginNumLives = p.getLives()
     if turn % 3 == 0 and len(ghosts) < len(ghostsAvailable):
@@ -41,7 +41,10 @@ def runSingleTurn(turn, ghosts, ghostsAvailable, intelligenceLevel, p, board, sc
         if pacmanIntelligent:
             state = p.intelligentMove(board, ghosts)
         elif move == "":
-            state = p.takeAction(board, input("Action: "))
+            if Q == []:
+                state = p.takeAction(board, input("Action: "))
+            else:
+                state = p.useReinforcementTable(board, Q)
         else:
             state = p.takeAction(board, move)
 
@@ -87,7 +90,7 @@ def startGame(board, p, ghostsAvailable, Q, intelligenceLevel=3, pacmanIntellige
             print("Lives:", p.getLives(), "\tDots left:", board.dotsLeft, "\tLocation:", p.location, "\tTurn:", turn, "\tScore:", score)
             print(board, end='')
             print("\nActions available:", p.actions(board))
-        turn, ghosts, p, board, score, dead = runSingleTurn(turn, ghosts, beginGhosts, intelligenceLevel, p, board, score, dead, "", pacmanIntelligent)
+        turn, ghosts, p, board, score, dead = runSingleTurn(turn, ghosts, beginGhosts, intelligenceLevel, p, board, score, dead, "", pacmanIntelligent, Q)
 
     # Game over
     if verbose:
@@ -117,14 +120,15 @@ if __name__ == "__main__":
 
     # Train Q for p
     Q = []
-    Q, scores = p.trainQ(board, 50, 0.5, 0.7, ghostsAvailable, intelligenceLevel)
+    # Trains Q table and prints each game
+    Q, scores = p.trainQ(board, 25, 0.5, 0.7, ghostsAvailable, intelligenceLevel, True)
     print(scores)
 
-    #Runs startGame without Pacman intelligence and printing
+    # Runs startGame without Pacman intelligence and printing
     #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, True)
 
-    #Runs startGame with Pacman intelligence and not printing - IMPLEMENTED IN ANOTHER BRANCH
+    # Runs startGame with Pacman intelligence and not printing - IMPLEMENTED IN ANOTHER BRANCH
     #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, True, False)
 
-    #Runs startGame with Q table and not printing - NOT IMPLEMENTED
-    #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, False)
+    # Runs startGame with Q table and prints each step
+    startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, True)
