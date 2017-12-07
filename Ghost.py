@@ -114,9 +114,7 @@ class Ghost(object):
         for depth in range(maxDepth):
             result = Ghost.depthLimitedSearch(self, board, locOfPacman, Ghost.actions, Ghost.takeAction, depth)
             if result != "cutoff" and result != "failure":
-                print("Ghost found intelligent move. Returning intelligentMove")
                 return Ghost.takeAction(self, board, result)
         # If we get here, this means we were cutoff. Essentially, we couldn't find Pacman within maxDepth moves
         # At this point, we just want to make a move in the direction that Pacman is in
-        print("Ghost didn't find intelligent move. Running takeActionShortestDistance")
         return Ghost.takeActionShortestDistance(self, board, locOfPacman)
