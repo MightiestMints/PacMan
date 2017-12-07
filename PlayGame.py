@@ -15,7 +15,7 @@ def getDots(state):
                 dots.append(d.Dot(x, y, True))
     return dots
 
-def runSingleTurn(turn, ghosts, ghostsAvailable, intelligenceLevel, p, board, score, dead, move=""):
+def runSingleTurn(turn, ghosts, ghostsAvailable, intelligenceLevel, p, board, score, dead, move="", pacmanIntelligent=False):
     beginNumDots = board.dotsLeft
     beginNumLives = p.getLives()
     if turn % 3 == 0 and len(ghosts) < len(ghostsAvailable):
@@ -38,7 +38,9 @@ def runSingleTurn(turn, ghosts, ghostsAvailable, intelligenceLevel, p, board, sc
             p.lives -= 1
             dead = True
     if not dead:
-        if move == "":
+        if pacmanIntelligent:
+            state = p.intelligentMove(board, ghosts)
+        elif move == "":
             state = p.takeAction(board, input("Action: "))
         else:
             state = p.takeAction(board, move)
@@ -68,36 +70,31 @@ def runSingleTurn(turn, ghosts, ghostsAvailable, intelligenceLevel, p, board, sc
 # Creates Pac Man and starts the game. State and Ghost objects are passed in as parameters
 # Right now the state is advancing a turn only after a move is selected. This will change when Pac Man gets his smarts
 # Currently spawns a ghost every 3 turns
-def startGame(state, ghostsAvailable, intelligenceLevel=3):
+def startGame(board, p, ghostsAvailable, Q, intelligenceLevel=3, pacmanIntelligent=False, verbose=True):
     # Current Score of the game stored as an Integer
-    board = Board.GameBoard(state)
     score = 0
-    p = P.PacMan(board.pacManSpawnPt)
-    ghostSpawn = board.ghostSpawnPt
     turn = 1
     dead = False
     ghosts = []
 
-    #Q, scores = p.trainQ(board, 50, 0.5, 0.7, ghostsAvailable, intelligenceLevel)
-    #print(scores)
-
-
     while not p.gameOver(board):
         beginGhosts = copy.deepcopy(ghostsAvailable)
         if dead:
-            print("You died!")
+            if verbose:
+                print("You died!")
             dead = False
-        print("Lives:", p.getLives(), "\tDots left:", board.dotsLeft, "\tLocation:", p.location, "\tTurn:", turn, "\tScore:", score)
-        # Number of dots remaining and lives at the beginning of the turn. This is used in score calculation.
-        print(board, end='')
-        print("\nActions available:", p.actions(board))
-        # print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-        turn, ghosts, p, board, score, dead = runSingleTurn(turn, ghosts, beginGhosts, intelligenceLevel, p, board, score, dead)
+        if verbose:
+            print("Lives:", p.getLives(), "\tDots left:", board.dotsLeft, "\tLocation:", p.location, "\tTurn:", turn, "\tScore:", score)
+            print(board, end='')
+            print("\nActions available:", p.actions(board))
+        turn, ghosts, p, board, score, dead = runSingleTurn(turn, ghosts, beginGhosts, intelligenceLevel, p, board, score, dead, "", pacmanIntelligent)
 
     # Game over
-    if p.lives == 0:
-        print("Game over: You died!")
-    else: print("Game over: You ate all the dots with", p.getLives(), "lives left!")
+    if verbose:
+        if p.lives == 0:
+            print("Game over: You died!")
+        else:
+            print("Game over: You ate all the dots with", p.getLives(), "lives left!")
 
 if __name__ == "__main__":
 
@@ -109,9 +106,25 @@ if __name__ == "__main__":
              ['|', ' ', '=', '=', '=', ' ', '=', '=', '=', ' ', '|'],
              ['|', '.', '.', '.', '.', '.', '.', '.', '.', 'P', '|'],
              ['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=']]
+
     # Start game with above state and 2 ghosts
     board = Board.GameBoard(state)
-    startGame(state, [G.Ghost(board.ghostSpawnPt)], 3)
+    # Create a Pacman object using this board
+    p = P.PacMan(board.pacManSpawnPt)
 
-    # Q, stepsToGoal = PacMan.trainQ(50, 0.5, 0.7, PacMan.actions(), PacMan.takeAction())
-    # print(stepsToGoal)
+    ghostsAvailable = [G.Ghost(board.ghostSpawnPt)]
+    intelligenceLevel = 3
+
+    # Train Q for p
+    Q = []
+    Q, scores = p.trainQ(board, 50, 0.5, 0.7, ghostsAvailable, intelligenceLevel)
+    print(scores)
+
+    #Runs startGame without Pacman intelligence and printing
+    #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, True)
+
+    #Runs startGame with Pacman intelligence and not printing - IMPLEMENTED IN ANOTHER BRANCH
+    #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, True, False)
+
+    #Runs startGame with Q table and not printing - NOT IMPLEMENTED
+    #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, False)
