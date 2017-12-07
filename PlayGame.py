@@ -91,7 +91,6 @@ def startGame(board, p, ghostsAvailable, Q, intelligenceLevel=3, pacmanIntellige
             print(board, end='')
             print("\nActions available:", p.actions(board))
         turn, ghosts, p, board, score, dead = runSingleTurn(turn, ghosts, beginGhosts, intelligenceLevel, p, board, score, dead, "", pacmanIntelligent, Q)
-
     # Game over
     if verbose:
         if p.lives == 0:
@@ -121,14 +120,14 @@ if __name__ == "__main__":
     # Train Q for p
     Q = []
     # Trains Q table and prints each game
-    Q, scores = p.trainQ(board, 25, 0.5, 0.7, ghostsAvailable, intelligenceLevel, True)
-    print(scores)
+    # Q, scores = p.trainQ(board, 25, 0.5, 0.7, ghostsAvailable, intelligenceLevel, True)
+    # print(scores)
 
     # Runs startGame without Pacman intelligence and printing
     #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, True)
 
-    # Runs startGame with Pacman intelligence and not printing - IMPLEMENTED IN ANOTHER BRANCH
-    #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, True, False)
+    # Runs startGame with Pacman intelligence and not printing
+    startGame(board, p, ghostsAvailable, Q, intelligenceLevel, True, True)
 
-    # Runs startGame with Q table and prints each step
-    startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, True)
+    # Runs startGame with Q table and printing
+    #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, True)
