@@ -76,7 +76,7 @@ def runSingleTurn(turn, ghosts, ghostsAvailable, intelligenceLevel, p, board, sc
 def startGame(board, p, ghostsAvailable, Q, intelligenceLevel=3, pacmanIntelligent=False, verbose=True):
     # Current Score of the game stored as an Integer
     score = 0
-    turn = 1
+    turn = 0
     dead = False
     ghosts = []
 
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     state = [['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '='],
              ['|', ' ', ' ', ' ', ' ', 'G', ' ', ' ', ' ', ' ', '|'],
              ['|', ' ', '=', '=', '=', ' ', '=', '=', '=', ' ', '|'],
-             ['t', ' ', '|', ' ', '|', ' ', '|', ' ', '|', ' ', 't'],
+             ['|', ' ', '|', ' ', '|', ' ', '|', ' ', '|', ' ', '|'],
              ['|', ' ', '=', '=', '=', ' ', '=', '=', '=', ' ', '|'],
              ['|', '.', '.', '.', '.', '.', '.', '.', '.', 'P', '|'],
              ['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=']]
@@ -120,14 +120,18 @@ if __name__ == "__main__":
     # Train Q for p
     Q = []
     # Trains Q table and prints each game
-    # Q, scores = p.trainQ(board, 25, 0.5, 0.7, ghostsAvailable, intelligenceLevel, True)
-    # print(scores)
+    Q, scores = p.trainQ(board, 50, 0.5, 0.7, ghostsAvailable, intelligenceLevel, True)
+    print(scores)
+
+    for entry in Q:
+        print(entry)
+        print(Q[entry])
 
     # Runs startGame without Pacman intelligence and printing
     #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, True)
 
     # Runs startGame with Pacman intelligence and not printing
-    startGame(board, p, ghostsAvailable, Q, intelligenceLevel, True, True)
+    #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, True, True)
 
     # Runs startGame with Q table and printing
-    #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, True)
+    startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, True)

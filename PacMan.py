@@ -9,7 +9,7 @@ class PacMan(object):
 
     # Constructor
     def __init__(self, respawn):
-        self.lives = 3                                      # Lives left
+        self.lives = 3                                     # Lives left
         self.location = respawn                             # 2D indices of Pac Man's location
         self.respawn = respawn                              # 2D indices of Pac Man's spawn point
 
@@ -203,10 +203,12 @@ class PacMan(object):
     # Returns the move that is the best available from the trained Q table
     def useReinforcementTable(self, board, Q):
         moves = PacMan.actions(self, board)
-        bestValue = 0
+        bestValue = -65535
         bestMove = ""
         for move in moves:
+            print("Checking for: ", PacMan.boardMoveTuple(self, board, move))
             value = Q.get(PacMan.boardMoveTuple(self, board, move), 0)
+            print("value:", value, "vs bestValue:", bestValue)
             if value > bestValue:
                 bestValue = value
                 bestMove = move
@@ -245,48 +247,38 @@ class PacMan(object):
             while not done and not copySelf.gameOver(state):
                 dead = False
                 copyGhosts = copy.deepcopy(ghostsAvailable)
-                # if verbose:
-                #     print(state,end='')
+                if verbose:
+                     print(state,end='')
                 step += 1
                 copyState = copy.deepcopy(state)
                 move = PacMan.epsilonGreedy(copySelf, epsilon, Q, copyState)
 
-                # Need only 3 return values:
-                # 1. ghosts, because we need to keep passing in the array of ghosts so that they can make moves
-                # 2. self, because we need to update PacMan object values
-                # 3. stateNew, because we have a new board state
                 _, ghosts, copySelf, stateNew, score, dead = PlayGame.runSingleTurn(step, ghosts, copyGhosts, intelligenceLevel, copySelf, copyState, score, dead, move)
                 # Full return: turn, ghosts, p, board, score, dead
 
                 #Initial value
-                if PacMan.boardMoveTuple(copySelf, copyState, move) not in Q:
-                    Q[PacMan.boardMoveTuple(copySelf, copyState, move)] = 0  # initial Q value for new state,move
+                if PacMan.boardMoveTuple(copySelf, state, move) not in Q:
+                    Q[PacMan.boardMoveTuple(copySelf, state, move)] = 0  # initial Q value for new state,move
 
-                if stateNew.dotsLeft == 0:
-                    # Pacman won. Big positive reinforcement
-                    Q[PacMan.boardMoveTuple(copySelf, copyState, move)] += rho * (5 + Q[PacMan.boardMoveTuple(copySelf, copyState, move)])
-                    if verbose:
-                        print("Game:", nGames, "; Pacman won!")
-                    done = True
+                if stateNew.dotsLeft < state.dotsLeft:
+                    #Pacman ate a dot. Medium positive reinforcement
+                    Q[PacMan.boardMoveTuple(copySelf, state, move)] += 3
                 else:
-                    if stateNew.dotsLeft < state.dotsLeft:
-                        #Pacman ate a dot. Small positive reinforcement
-                        Q[PacMan.boardMoveTuple(copySelf, copyState, move)] += rho * (1 - Q[PacMan.boardMoveTuple(copySelf, copyState, move)])
-                    if dead == True:
-                        #Pacman lost a life. Small negative reinforcement
-                        Q[PacMan.boardMoveTuple(copySelf, copyState, move)] += rho * (-1 - Q[PacMan.boardMoveTuple(copySelf, copyState, move)])
-                    if copySelf.lives == 0:
-                        # Pacman lost. Big negative reinforcement
-                        Q[PacMan.boardMoveTuple(copySelf, copyState, move)] += rho * (-5 - Q[PacMan.boardMoveTuple(copySelf, copyState, move)])
-                        if verbose:
-                            print("Game:", nGames, "; Pacman ran out of lives. Starting new game...")
-                        score = 0
-                        done = True
+                    #Pacman did not eat a dot. Small negative reinforcement
+                    Q[PacMan.boardMoveTuple(copySelf, state, move)] += -1
+                if dead:
+                    #Pacman lost a life. Large negative reinforcement
+                    Q[PacMan.boardMoveTuple(copySelf, state, move)] = -10
 
                 if step > 1:
-                    Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)] += rho * (Q[PacMan.boardMoveTuple(copySelf, copyState, move)] - Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)])
+                    Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)] += rho * (Q[PacMan.boardMoveTuple(copySelf, state, move)] - Q[PacMan.boardMoveTuple(copySelf, stateOld, moveOld)])
 
-                stateOld, moveOld, scoreOld = copyState, move, score
+                stateOld, moveOld, scoreOld = state, move, score
                 state = stateNew
+            if verbose:
+                if copySelf.lives > 0:
+                    print("Pacman Won!")
+                else:
+                    print("Pacman Lost!")
             scores.append(score)
         return Q, scores
