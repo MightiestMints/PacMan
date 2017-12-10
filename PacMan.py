@@ -206,14 +206,11 @@ class PacMan(object):
         bestValue = -65535
         bestMove = ""
         for move in moves:
-            print("Checking for: ", PacMan.boardMoveTuple(self, board, move))
             value = Q.get(PacMan.boardMoveTuple(self, board, move), 0)
-            print("value:", value, "vs bestValue:", bestValue)
             if value > bestValue:
                 bestValue = value
                 bestMove = move
-        board = PacMan.takeAction(self, board, bestMove)
-        return board
+        return bestMove
 
     # Choose a random move if random.uniform() < epsilon, otherwise, choose the move that has the least total moves to eat all dots
     def epsilonGreedy(self, epsilon, Q, state):
@@ -247,8 +244,6 @@ class PacMan(object):
             while not done and not copySelf.gameOver(state):
                 dead = False
                 copyGhosts = copy.deepcopy(ghostsAvailable)
-                if verbose:
-                     print(state,end='')
                 step += 1
                 copyState = copy.deepcopy(state)
                 move = PacMan.epsilonGreedy(copySelf, epsilon, Q, copyState)

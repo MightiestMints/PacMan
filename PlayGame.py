@@ -20,6 +20,10 @@ def runSingleTurn(turn, ghosts, ghostsAvailable, intelligenceLevel, p, board, sc
     beginNumLives = p.getLives()
     if turn % 3 == 0 and len(ghosts) < len(ghostsAvailable):
         ghosts.append(ghostsAvailable[len(ghosts)])
+
+    if move == "" and Q != []:
+        move = p.useReinforcementTable(board, Q)
+
     for ghost in ghosts:
         if intelligenceLevel is 0:
             state = ghost.randomMove(board)
@@ -40,11 +44,8 @@ def runSingleTurn(turn, ghosts, ghostsAvailable, intelligenceLevel, p, board, sc
     if not dead:
         if pacmanIntelligent:
             state = p.intelligentMove(board, ghosts)
-        elif move == "":
-            if Q == []:
-                state = p.takeAction(board, input("Action: "))
-            else:
-                state = p.useReinforcementTable(board, Q)
+        elif move == "" and Q == []:
+            state = p.takeAction(board, input("Action: "))
         else:
             state = p.takeAction(board, move)
 
@@ -76,7 +77,7 @@ def runSingleTurn(turn, ghosts, ghostsAvailable, intelligenceLevel, p, board, sc
 def startGame(board, p, ghostsAvailable, Q, intelligenceLevel=3, pacmanIntelligent=False, verbose=True):
     # Current Score of the game stored as an Integer
     score = 0
-    turn = 0
+    turn = 1
     dead = False
     ghosts = []
 
@@ -120,12 +121,8 @@ if __name__ == "__main__":
     # Train Q for p
     Q = []
     # Trains Q table and prints each game
-    Q, scores = p.trainQ(board, 50, 0.5, 0.7, ghostsAvailable, intelligenceLevel, True)
+    Q, scores = p.trainQ(board, 30, 0.5, 0.7, ghostsAvailable, intelligenceLevel, True)
     print(scores)
-
-    for entry in Q:
-        print(entry)
-        print(Q[entry])
 
     # Runs startGame without Pacman intelligence and printing
     #startGame(board, p, ghostsAvailable, Q, intelligenceLevel, False, True)
