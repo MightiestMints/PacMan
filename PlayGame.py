@@ -98,6 +98,7 @@ def startGame(board, p, ghostsAvailable, Q, intelligenceLevel=3, pacmanIntellige
             print("Game over: You died!")
         else:
             print("Game over: You ate all the dots with", p.getLives(), "lives left!")
+    return (turn, score, p.getLives(), board.dotsLeft)
 
 if __name__ == "__main__":
 
