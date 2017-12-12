@@ -127,7 +127,7 @@ if __name__ == "__main__":
     # board3(2, 2, False, False)
     # board3(2, 3, True, False)
     # board3(2, 3, False, False)
-    # 
+    #
     # print("\nProgram exiting")
 
 
