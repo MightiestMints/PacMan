@@ -19,7 +19,7 @@ def run(state, numGhosts, intelligenceLevel, IDS, verbose):
         results = PG.startGame(board, p, ghosts, Q, intelligenceLevel, False, False)
         if verbose: print("\tDone!")
         ghostInfo = "[" + str(numGhosts) + ", " + str(intelligenceLevel) + "]"
-        print("\t", ghostInfo, " Q Table Results:\t\t\tTurns:", results[0], "\tScore:", results[1], "\tLives left:", results[2], "\tDots left:", results[3])
+        print("\t", ghostInfo, "Q Table Results:\t\tTurns:", results[0], "\tScore:", results[1], "\tLives left:", results[2], "\tDots left:", results[3])
     # Run with Pacman IDS
     else:
         avgResults = [0, 0, 0, 0, 0]
@@ -61,6 +61,7 @@ def board1(numGhosts, intelligenceLevel, IDS, verbose):
     if verbose:
         printState(state)
     run(state, numGhosts, intelligenceLevel, IDS, False)
+    return state
 
 def board2(numGhosts, intelligenceLevel, IDS, verbose):
     state = [['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '='],
@@ -74,6 +75,7 @@ def board2(numGhosts, intelligenceLevel, IDS, verbose):
     if verbose:
         printState(state)
     run(state, numGhosts, intelligenceLevel, IDS, False)
+    return state
 
 def board3(numGhosts, intelligenceLevel, IDS, verbose):
     state = [['=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '='],
@@ -86,21 +88,22 @@ def board3(numGhosts, intelligenceLevel, IDS, verbose):
     if verbose:
         printState(state)
     run(state, numGhosts, intelligenceLevel, IDS, False)
+    return state
 
 if __name__ == "__main__":
 
     print("\nFormat: [<number of ghosts>, <ghost intelligence level (1-3)>] <pacMan AI>  <turns>  <score>  <lives left>"
           "  <moves explored>  <dots left>\n\n")
 
-    print("Board 1:")
-    for i in range(1, 4):
-        for j in range(1, 4):
-            if i is 1 and j is 1:
-                board1(i, j, True, True)
-            else:
-                board1(i, j, True, False)
-            board1(i, j, False, False)
-
+    # print("Board 1:")
+    # for i in range(1, 4):
+    #     for j in range(1, 4):
+    #         if i is 1 and j is 1:
+    #             board1(i, j, True, True)
+    #         else:
+    #             board1(i, j, True, False)
+    #         board1(i, j, False, False)
+    #
     # print("Board 2:")
     # for i in range(1, 4):
     #     for j in range(1, 4):
@@ -111,13 +114,20 @@ if __name__ == "__main__":
     #         board2(i, j, False, False)
     #
     # print("Board 3:")
-    # for i in range(1, 4):
-    #     for j in range(1, 4):
-    #         if i is 1 and j is 1:
-    #             board3(i, j, True, True)
-    #         else:
-    #             board3(i, j, True, False)
-    #         board3(i, j, False, False)
+    # board3(1, 1, True, True)
+    # board3(1, 1, False, False)
+    # board3(1, 2, True, False)
+    # board3(1, 2, False, False)
+    # board3(1, 3, True, False)
+    # board3(1, 3, False, False)
+
+    # board3(2, 1, True, True)
+    # board3(2, 1, False, False)
+    # board3(2, 2, True, False)
+    # board3(2, 2, False, False)
+    # board3(2, 3, True, False)
+    # board3(2, 3, False, False)
+    # 
     # print("\nProgram exiting")
 
 
