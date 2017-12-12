@@ -39,7 +39,6 @@ class PacMan(object):
 
     # Returns a tuple containing (state after an action is taken,
     def takeAction(self, board, action):
-
         # Get location of new position after action is taken
         if action == 'up':
             #check for teleportation
@@ -157,7 +156,7 @@ class PacMan(object):
             result = PacMan.depthLimitedSearch(self, board, ghosts, closestDots, PacMan.actions, PacMan.takeAction,
                                               depth)
             if result != "cutoff" and result != "failure" and result != 'run':
-                print("PacMan found intelligent move. Returning intelligentMove")
+                #print("PacMan found intelligent move. Returning intelligentMove")
                 return PacMan.takeAction(self, board, result)
 
         if(result == 'run'):
@@ -166,7 +165,7 @@ class PacMan(object):
             PacMan.makeRandomMove(self, board)
 
     def runFromGhost(self, board, ghosts, actions):
-        print("running from ghosts")
+        #print("running from ghosts")
         listOfActions = PacMan.actions(self, board)
         for ghost in ghosts:
             #Find direction towards ghost, avoid it...
